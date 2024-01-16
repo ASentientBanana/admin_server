@@ -11,7 +11,7 @@ import (
 
 func GetProjects(c *gin.Context) {
 	db, err := gorm.Open(sqlite.Open("site.db"), &gorm.Config{})
-  
+
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Bad request",
@@ -35,6 +35,11 @@ func GetProjects(c *gin.Context) {
 }
 
 func UpdateProjects(c *gin.Context) {
+
+	c.JSON(http.StatusAccepted, gin.H{
+		"ok": "ok",
+	})
+	return
 
 	var body struct {
 		project models.Project

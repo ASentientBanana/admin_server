@@ -2,9 +2,14 @@ package controllers
 
 import (
 	"net/http"
+	"os"
+	"time"
 
 	"github.com/AsentientBanana/admin/models"
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v5"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
 func Login(c *gin.Context) {
@@ -23,43 +28,35 @@ func Login(c *gin.Context) {
 
 	var admin models.Admin
 
-	// db, err := gorm.Open(sqlite.Open("site.db"), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open("site.db"), &gorm.Config{})
 
-	// db.First(&admin, "Username = ?", body.Username)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Problem connecting to the database",
+		})
+		return
+	}
+
+	db.First(&admin, "Username = ?", body.Username)
 
 	// Create a new token object, specifying signing method and the claims
 	// you would like it to contain.
-	// token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-	// 	"sub": admin.ID,
-	// 	"exp": time.Date(2015, 10, 10, 12, 0, 0, 0, time.UTC).Unix(),
-	// })
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"sub": admin.ID,
+		"exp": time.Now().Add(time.Hour).Unix(),
+	})
 
 	// Sign and get the complete encoded token as a string using the secret
-	// tokenString, err := token.SignedString(hmacSampleSecret)
+	tokenString, err := token.SignedString([]byte(os.Getenv("SECRET")))
 
-	// fmt.Println(tokenString, err)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Error signing token",
+		})
+		return
+	}
 
-	// db, err := gorm.Open(sqlite.Open("site.db"), &gorm.Config{})
-
-	// if err != nil {
-	// 	c.JSON(http.StatusInternalServerError, gin.H{
-	// 		"error": "Sry brt bad request",
-	// 	})
-	// 	return
-	// }
-
-	// var admin models.Admin
-
-	// db.First(&admin, "Username = ?", body.Username)
-
-	// hashErr := bcrypt.CompareHashAndPassword([]byte(admin.Password), []byte(body.Password))
-	// if hashErr != nil {
-	// 	c.JSON(http.StatusUnauthorized, gin.H{
-	// 		"error": "Unauthorized, bad password" + " Supplied " + body.Password +" " +body.Username ,
-	// 	})
-
-	// 	return
-	// }
-
-	c.JSON(http.StatusOK, admin)
+	c.JSON(http.StatusOK, gin.H{
+		"token": tokenString,
+	})
 }
