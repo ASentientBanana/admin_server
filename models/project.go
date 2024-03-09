@@ -10,6 +10,7 @@ type Project struct {
 	Live        string
 	Github      string
 	Image       string
+	Position    int
 }
 
 // project_id = models.AutoField(primary_key=True)

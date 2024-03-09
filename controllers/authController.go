@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 	"time"
@@ -8,6 +9,7 @@ import (
 	"github.com/AsentientBanana/admin/models"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
@@ -37,7 +39,22 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	db.First(&admin, "Username = ?", body.Username)
+	//Check user
+	if db.First(&admin, "Username = ?", body.Username) == nil {
+		fmt.Println("Username: ", body.Username)
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "Bad request for username",
+		})
+		return
+	}
+
+	//Check password
+	if bcrypt.CompareHashAndPassword([]byte(admin.Password), []byte(body.Password)) != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "Bad request",
+		})
+		return
+	}
 
 	// Create a new token object, specifying signing method and the claims
 	// you would like it to contain.

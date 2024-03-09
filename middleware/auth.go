@@ -4,9 +4,13 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"time"
 
+	"github.com/AsentientBanana/admin/models"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
 func Validate(c *gin.Context) {
@@ -41,21 +45,24 @@ func Validate(c *gin.Context) {
 	}
 
 	//Check if token expired
-	// exp, err := strconv.Atoi(claims["exp"])
+	if float64(time.Now().Unix()) > claims["exp"].(float64) {
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
 
-	// if err != nil {
-	// 	c.AbortWithStatus(http.StatusBadRequest)
-	// 	return
-	// }
+	var admin models.Admin
 
-	// if time.Now().Unix() > int64(exp) {
+	db, err := gorm.Open(sqlite.Open("site.db"), &gorm.Config{})
 
-	// }
+	if err != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
 
-	fmt.Println("Got:")
-	fmt.Println(claims["sub"], claims["exp"])
-
-	// db, err := gorm.Open(sqlite.Open("site.db"), &gorm.Config{})
+	if db.First(&admin, "ID = ?", claims["sub"]).Error != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
 
 	c.Next()
 }

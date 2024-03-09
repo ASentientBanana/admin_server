@@ -17,7 +17,9 @@ func InitRoutes(server *gin.Engine) {
 	server.GET("/api/projects", controllers.GetProjects)
 
 	//admin
-	server.PUT("/api/projects", middleware.Validate, controllers.UpdateProjects)
+	server.PUT("/admin/api/projects", middleware.Validate, controllers.UpdateProjects)
+	server.POST("/admin/api/projects/create", middleware.Validate, controllers.CreateProjects)
+	server.DELETE("/admin/api/projects/:id", middleware.Validate, controllers.DeleteProjects)
 
 	// auth
 	server.POST("/admin/api/login", controllers.Login)
