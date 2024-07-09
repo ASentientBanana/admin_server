@@ -23,6 +23,5 @@ func InitRoutes(server *gin.Engine) {
 
 	// auth
 	server.POST("/admin/api/login", controllers.Login)
-	server.POST("/admin/api/register", controllers.Update)
 
 }
