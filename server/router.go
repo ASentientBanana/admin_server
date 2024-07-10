@@ -14,14 +14,13 @@ type ReqBody struct {
 func InitRoutes(server *gin.Engine) {
 
 	//projects
-	server.GET("/api/projects", controllers.GetProjects)
+	server.GET("/projects", controllers.GetProjects)
 
 	//admin
-	server.PUT("/admin/api/projects", middleware.Validate, controllers.UpdateProjects)
-	server.POST("/admin/api/projects/create", middleware.Validate, controllers.CreateProjects)
-	server.DELETE("/admin/api/projects/:id", middleware.Validate, controllers.DeleteProjects)
+	server.PUT("/projects", middleware.Validate, controllers.UpdateProjects)
+	server.POST("/projects/create", middleware.Validate, controllers.CreateProjects)
+	server.DELETE("/projects/:id", middleware.Validate, controllers.DeleteProjects)
 
 	// auth
-	server.POST("/admin/api/login", controllers.Login)
-
+	server.POST("/login", controllers.Login)
 }

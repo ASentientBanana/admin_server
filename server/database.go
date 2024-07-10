@@ -19,12 +19,12 @@ func InitDatabase() {
 
 	db.AutoMigrate(&models.Admin{})
 	db.AutoMigrate(&models.Project{})
-	admin_username := os.Getenv("DEFAULT_ADMIN_USER")
-	if admin_username == "" {
-		admin_username = "admin"
+	admin_secret := os.Getenv("DEFAULT_ADMIN_USER")
+	if admin_secret == "" {
+		admin_secret = "admin"
 		// panic("Environment variable for admin not set")
 	}
-	hashedPass, err := bcrypt.GenerateFromPassword([]byte(admin_username), 10)
+	hashedPass, err := bcrypt.GenerateFromPassword([]byte(admin_secret), 10)
 
 	if err != nil {
 		fmt.Println("Problem generating user info")
