@@ -1,11 +1,13 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 
-	"github.com/AsentientBanana/admin/models"
+	"github.com/AsentientBanana/admin/dto"
 	"github.com/AsentientBanana/admin/services"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
 func GetProjects(c *gin.Context) {
@@ -21,29 +23,33 @@ func GetProjects(c *gin.Context) {
 }
 
 func UpdateProjects(c *gin.Context) {
-	var body struct {
-		Projects []models.Project `json:"projects"`
-	}
 
-	if err := c.Bind(&body); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Bad request",
-		})
+	if err := c.Request.ParseMultipartForm(32); err != nil {
+		fmt.Println(err)
+		c.String(http.StatusBadRequest, "Error parsing form data: %v", err)
 		return
 	}
 
-	projects, err := services.UpdateProjects(body.Projects)
+	updated := services.UpdateProjects(c)
 
-	if err != nil {
+	if updated.Error != nil {
+		c.String(int(updated.Status), updated.Error.Error())
+		return
+	}
+
+	projects, get_projects_err := services.GetProjects()
+
+	if get_projects_err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Internal server error",
+			"error": "Problem getting projects",
 		})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
+	c.JSON(http.StatusAccepted, gin.H{
 		"projects": projects,
 	})
+
 }
 
 func DeleteProjects(c *gin.Context) {
@@ -60,17 +66,19 @@ func DeleteProjects(c *gin.Context) {
 }
 
 func CreateProjects(c *gin.Context) {
-	var body struct {
-		Project models.Project
-	}
+	var form dto.CreateForm
 
-	if err := c.Bind(&body.Project); err != nil {
+	fmt.Println(c.Request.PostForm)
+	c.Request.ParseForm()
+
+	if err := c.ShouldBindWith(&form, binding.FormMultipart); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Problem reading request",
 		})
 		return
 	}
-	projects, err := services.CreateProject(&body.Project)
+
+	projects, err := services.CreateProject(&form)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{

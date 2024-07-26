@@ -4,13 +4,13 @@ import "gorm.io/gorm"
 
 type Project struct {
 	gorm.Model
-	Name        string
-	Stack       string
-	Description string
-	Live        string
-	Github      string
-	Image       string
-	Position    int
+	Name        string `json:"name" xml:"name"`
+	Stack       string `json:"stack" xml:"stack"`
+	Description string `json:"description" xml:"description"`
+	Live        string `json:"live" xml:"live"`
+	Github      string `json:"github" xml:"github"`
+	Image       string `json:"image" xml:"image"`
+	Position    int    `json:"position" xml:"position"`
 }
 
 // project_id = models.AutoField(primary_key=True)

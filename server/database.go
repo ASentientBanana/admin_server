@@ -24,6 +24,7 @@ func InitDatabase() {
 		admin_secret = "admin"
 		// panic("Environment variable for admin not set")
 	}
+	fmt.Println(admin_secret)
 	hashedPass, err := bcrypt.GenerateFromPassword([]byte(admin_secret), 10)
 
 	if err != nil {

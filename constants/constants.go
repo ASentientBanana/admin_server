@@ -1,3 +1,4 @@
 package constants
 
-// DB_NAME := "site.db"
+const DEFAULT_IMAGE = "static/fallback.png"
+const DEFAULT_RESUME = "static/resume.pdf"

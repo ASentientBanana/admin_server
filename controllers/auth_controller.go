@@ -21,7 +21,7 @@ func Login(c *gin.Context) {
 		Password string
 	}
 
-	if err := c.Bind(&body); err != nil {
+	if err := c.BindJSON(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Problem reading request",
 		})
@@ -40,6 +40,7 @@ func Login(c *gin.Context) {
 	}
 
 	//Check user
+	fmt.Println("Looking for ", body)
 	if db.First(&admin, "Username = ?", body.Username) == nil {
 		fmt.Println("Username: ", body.Username)
 		c.JSON(http.StatusUnauthorized, gin.H{
