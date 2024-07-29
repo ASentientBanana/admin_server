@@ -15,9 +15,9 @@ func InitRoutes(server *gin.Engine) {
 
 	//projects
 	server.GET("/projects", controllers.GetProjects)
-	server.PUT("/projects", middleware.Validate, controllers.UpdateProjects)
-	server.POST("/projects", middleware.Validate, controllers.CreateProjects)
-	server.DELETE("/projects/:id", middleware.Validate, controllers.DeleteProjects)
+	server.PUT("/projects", middleware.Authenticate, controllers.UpdateProjects)
+	server.POST("/projects", middleware.Authenticate, controllers.CreateProjects)
+	server.DELETE("/projects/:id", middleware.Authenticate, controllers.DeleteProjects)
 
 	//resume
 	server.GET("/resume", controllers.GetResume)
@@ -25,4 +25,7 @@ func InitRoutes(server *gin.Engine) {
 
 	// auth
 	server.POST("/login", controllers.Login)
+
+	//manga kolekt
+	server.GET("/mangakolekt/versions", controllers.GetAllVersions)
 }

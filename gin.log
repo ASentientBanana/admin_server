@@ -7,6 +7,7 @@
 [GIN-debug] GET    /resume                   --> github.com/AsentientBanana/admin/controllers.GetResume (5 handlers)
 [GIN-debug] POST   /resume                   --> github.com/AsentientBanana/admin/controllers.AddResume (5 handlers)
 [GIN-debug] POST   /login                    --> github.com/AsentientBanana/admin/controllers.Login (5 handlers)
+[GIN-debug] GET    /mangakolekt/versions     --> github.com/AsentientBanana/admin/controllers.GetAllVersions (5 handlers)
 [GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value.
 Please check https://pkg.go.dev/github.com/gin-gonic/gin#readme-don-t-trust-all-proxies for details.
 [GIN-debug] Listening and serving HTTP on :9898

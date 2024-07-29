@@ -13,7 +13,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func Validate(c *gin.Context) {
+func Authenticate(c *gin.Context) {
 
 	auth_header := c.Request.Header.Get("Authorization")
 
