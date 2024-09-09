@@ -1,11 +1,10 @@
 module github.com/AsentientBanana/admin
 
-go 1.20
+go 1.22.5
 
 require (
 	github.com/gin-contrib/cors v1.7.2
 	github.com/gin-gonic/gin v1.9.1
-	golang.org/x/crypto v0.22.0
 	gorm.io/driver/sqlite v1.5.4
 	gorm.io/gorm v1.25.5
 )
@@ -15,6 +14,7 @@ require (
 	github.com/cloudwego/base64x v0.1.4 // indirect
 	github.com/cloudwego/iasm v0.2.0 // indirect
 	github.com/kr/text v0.2.0 // indirect
+	golang.org/x/crypto v0.22.0 // indirect
 )
 
 require (

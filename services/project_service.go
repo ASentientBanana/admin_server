@@ -114,46 +114,41 @@ func UpdateProjects(c *gin.Context) UpdateReturn {
 		extractFormFieldByName(c, "description", i, &_project.Description)
 		extractFormFieldByName(c, "stack", i, &_project.Stack)
 		extractFormFieldByName(c, "name", i, &_project.Name)
-
 		//image
 		image_field := c.Request.MultipartForm.File[key_prefix+"image"]
-		if len(image_field) == 0 {
-			_project.Image = "static/fallback.png"
+		//Todo(petar): fix the problem where if no image is supplied no updates ocure
 
+		if image_field == nil || image_field[0] == nil {
 			items = append(items, _project)
 			continue
-		}
+		} else {
+			image_name := image_field[0].Filename
+			path := `static/projects/` + image_name
+			f, err := os.Create(path)
 
-		image := image_field[0]
-
-		if image == nil {
-			if _project.Image == "" {
-				_project.Image = "static/fallback.png"
+			if err != nil {
 				items = append(items, _project)
 				continue
-			} else {
+			}
+			content := []byte{}
+			uploaded_image, err := image_field[0].Open()
+			if err != nil {
+				items = append(items, _project)
+				os.Remove(path)
 				continue
 			}
+			uploaded_image.Read(content)
+			_, write_err := f.Write(content)
+			if write_err != nil {
+				items = append(items, _project)
+				os.Remove(path)
+				continue
+			}
+			_project.Image = path
+
+			items = append(items, _project)
 		}
 
-		image_name := "static/projects/" + image.Filename
-		image_file, create_err := os.Create(image_name)
-		form_image_file, form_image_open_err := image.Open()
-
-		if (form_image_open_err != nil || create_err != nil) && _project.Image != "" {
-			continue
-		}
-		defer form_image_file.Close()
-		defer image_file.Close()
-
-		_, copy_err := io.Copy(image_file, form_image_file)
-
-		if copy_err != nil {
-			continue
-		}
-
-		_project.Image = image_name
-		items = append(items, _project)
 	}
 
 	for _, item := range items {

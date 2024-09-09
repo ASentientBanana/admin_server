@@ -1,17 +1,12 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
 	"os"
 	"time"
 
-	"github.com/AsentientBanana/admin/models"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
-	"golang.org/x/crypto/bcrypt"
-	"gorm.io/driver/sqlite"
-	"gorm.io/gorm"
 )
 
 func Login(c *gin.Context) {
@@ -28,29 +23,13 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	var admin models.Admin
+	// Load env vars
+	env_secret := os.Getenv("ADMIN_SECRET")
+	admin_user := os.Getenv("ADMIN_USER")
+	admin_password := os.Getenv("ADMIN_PASSWORD")
 
-	db, err := gorm.Open(sqlite.Open("site.db"), &gorm.Config{})
-
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Problem connecting to the database",
-		})
-		return
-	}
-
-	//Check user
-	fmt.Println("Looking for ", body)
-	if db.First(&admin, "Username = ?", body.Username) == nil {
-		fmt.Println("Username: ", body.Username)
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "Bad request for username",
-		})
-		return
-	}
-
-	//Check password
-	if bcrypt.CompareHashAndPassword([]byte(admin.Password), []byte(body.Password)) != nil {
+	//authorize user
+	if admin_user != body.Username || admin_password != body.Password {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"error": "Bad request",
 		})
@@ -60,12 +39,18 @@ func Login(c *gin.Context) {
 	// Create a new token object, specifying signing method and the claims
 	// you would like it to contain.
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"sub": admin.ID,
+		"sub": admin_user,
 		"exp": time.Now().Add(time.Hour).Unix(),
 	})
 
-	// Sign and get the complete encoded token as a string using the secret
-	tokenString, err := token.SignedString([]byte(os.Getenv("SECRET")))
+	var secret string
+
+	if env_secret == "" {
+		secret = admin_password + "-" + admin_user
+	}
+
+	// Sign and get the complete encoded token as a string using the admin credentials
+	tokenString, err := token.SignedString([]byte(secret))
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{

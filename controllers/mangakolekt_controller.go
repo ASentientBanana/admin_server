@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -36,11 +35,11 @@ func AddNewVersion(c *gin.Context) {
 		return
 	}
 
-	name := "mangakolekt_1.0.0_linux.tar.gz"
+	// name := "mangakolekt_1.0.0_linux.tar.gz"
 
-	fileParts := strings.Split(name, "_")
+	// fileParts := strings.Split(name, "_")
 
-	version := fileParts[1]
-	os := fileParts[2]
+	// version := fileParts[1]
+	// fileParts[2]
 
 }
