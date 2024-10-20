@@ -2,29 +2,47 @@ package controllers
 
 import (
 	"fmt"
+	"github.com/AsentientBanana/admin/services"
+	"github.com/gin-gonic/gin"
 	"net/http"
 	"os"
-
-	"github.com/gin-gonic/gin"
+	"path"
 )
 
-// mk1.0.0_linux.tar.gz
+// name format
 // mangakolekt1.0.0_linux.tar.gz
-// mangakolekt_1.0.0_linux.tar.gz
 func GetAllVersions(c *gin.Context) {
-	entries, err := os.ReadDir("static/mangakolekt")
+	contents, err := os.ReadDir("static/mangakolekt")
 	if err != nil {
-		fmt.Println("err")
-		fmt.Println(err)
 		c.String(http.StatusInternalServerError, "No manga versions found")
 		return
 	}
-	fmt.Println("Entries")
-	fmt.Println(entries)
-	for _, e := range entries {
-		fmt.Println(e)
+
+	versions := make(map[string][]services.VersionEntry)
+
+	for _, content := range contents {
+
+		if !content.IsDir() {
+			continue
+		}
+		osName := content.Name()
+		_, ok := versions[osName]
+		if !ok {
+			versions[osName] = []services.VersionEntry{}
+		}
+		entryPath := path.Join("static/mangakolekt", osName)
+		entries, err := services.GetDirEntries(entryPath)
+		if err != nil {
+			continue
+		}
+		for _, e := range entries {
+			versions[osName] = append(versions[osName], e)
+		}
 	}
-	c.String(http.StatusAccepted, "ok")
+
+	c.JSON(http.StatusAccepted, gin.H{
+		"versions": versions,
+	})
 }
 
 func AddNewVersion(c *gin.Context) {

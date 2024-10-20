@@ -18,7 +18,8 @@ func main() {
 	f, _ := os.Create("gin.log")
 	gin.DefaultWriter = io.MultiWriter(f, os.Stdout)
 
-	r.Static("/static", "./static")
+	r.Static("/download", "./static")
+	//r.StaticFS("/", http.Dir("/static"))
 
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"}, // Change this to your frontend's origin
