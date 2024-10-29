@@ -4,25 +4,33 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
-	"github.com/AsentientBanana/admin/models"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
-	"gorm.io/driver/sqlite"
-	"gorm.io/gorm"
 )
 
 func Authenticate(c *gin.Context) {
 
-	auth_header := c.Request.Header.Get("Authorization")
+	authHeader := c.Request.Header.Get("Authorization")
 
-	if auth_header == "" {
+	if authHeader == "" {
 		c.AbortWithStatus(http.StatusUnauthorized)
 		return
 	}
+	// Check token formating to include Bearer
+	splitHeader := strings.Split(authHeader, " ")
+
+	if len(splitHeader) < 2 || splitHeader[0] != "Bearer" {
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+
+	extractedToken := splitHeader[1]
+
 	//parse jwt
-	token, err := jwt.Parse(auth_header, func(token *jwt.Token) (interface {
+	token, err := jwt.Parse(extractedToken, func(token *jwt.Token) (interface {
 	}, error) {
 		// Don't forget to validate the alg is what you expect:
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -30,7 +38,7 @@ func Authenticate(c *gin.Context) {
 		}
 
 		// hmacSampleSecret is a []byte containing your secret, e.g. []byte("my_secret_key")
-		return []byte(os.Getenv("SECRET")), nil
+		return []byte(os.Getenv("ADMIN_SECRET")), nil
 	})
 	if err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
@@ -45,21 +53,7 @@ func Authenticate(c *gin.Context) {
 	}
 
 	//Check if token expired
-	if float64(time.Now().Unix()) > claims["exp"].(float64) {
-		c.AbortWithStatus(http.StatusBadRequest)
-		return
-	}
-
-	var admin models.Admin
-
-	db, err := gorm.Open(sqlite.Open("site.db"), &gorm.Config{})
-
-	if err != nil {
-		c.AbortWithStatus(http.StatusBadRequest)
-		return
-	}
-
-	if db.First(&admin, "ID = ?", claims["sub"]).Error != nil {
+	if float64(time.Now().Unix()) > claims["exp"].(float64) || !token.Valid {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}

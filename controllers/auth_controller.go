@@ -47,6 +47,8 @@ func Login(c *gin.Context) {
 
 	if env_secret == "" {
 		secret = admin_password + "-" + admin_user
+	} else {
+		secret = env_secret
 	}
 
 	// Sign and get the complete encoded token as a string using the admin credentials

@@ -25,7 +25,6 @@ func GetProjects(c *gin.Context) {
 func UpdateProjects(c *gin.Context) {
 
 	if err := c.Request.ParseMultipartForm(32); err != nil {
-		fmt.Println(err)
 		c.String(http.StatusBadRequest, "Error parsing form data: %v", err)
 		return
 	}
@@ -40,6 +39,8 @@ func UpdateProjects(c *gin.Context) {
 	projects, get_projects_err := services.GetProjects()
 
 	if get_projects_err != nil {
+
+		fmt.Println(get_projects_err)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Problem getting projects",
 		})

@@ -31,7 +31,14 @@ func main() {
 	}))
 	r.Use(cors.Default())
 
+	admin_user := os.Getenv("ADMIN_USER")
+	admin_password := os.Getenv("ADMIN_PASSWORD")
+
+	if admin_user == "" || admin_password == "" {
+		panic("admin user or password missing in environment.")
+	}
+
 	server.InitRoutes(r)
 
-	r.Run(":9898")
+	panic(r.Run(":9898"))
 }
