@@ -2,11 +2,12 @@ package controllers
 
 import (
 	"fmt"
-	"github.com/AsentientBanana/admin/services"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"os"
 	"path"
+
+	"github.com/AsentientBanana/admin/services"
+	"github.com/gin-gonic/gin"
 )
 
 // name format
@@ -30,14 +31,12 @@ func GetAllVersions(c *gin.Context) {
 		if !ok {
 			versions[osName] = []services.VersionEntry{}
 		}
-		entryPath := path.Join("static/mangakolekt", osName)
+		entryPath := path.Join("download/mangakolekt", osName)
 		entries, err := services.GetDirEntries(entryPath)
 		if err != nil {
 			continue
 		}
-		for _, e := range entries {
-			versions[osName] = append(versions[osName], e)
-		}
+		versions[osName] = append(versions[osName], entries...)
 	}
 
 	c.JSON(http.StatusAccepted, gin.H{
