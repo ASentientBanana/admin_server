@@ -8,25 +8,24 @@ import (
 type VersionEntry struct {
 	Name string
 	Path string
+	Os   string
 }
 
-func GetDirEntries(root string) ([]VersionEntry, error) {
+func GetDirEntries(root string, alias string) ([]VersionEntry, error) {
 	entries, err := os.ReadDir(root)
 	if err != nil {
 		return []VersionEntry{}, err
 	}
 	files := []VersionEntry{}
 	for _, entry := range entries {
-		f := path.Join(root, entry.Name())
+		f := path.Join(alias, entry.Name())
 		if entry.IsDir() {
-			res, err := GetDirEntries(f)
+			res, err := GetDirEntries(f, alias)
 			if err == nil {
-				for _, re := range res {
-					files = append(files, re)
-				}
+				files = append(files, res...)
 			}
 		} else {
-			files = append(files, VersionEntry{Name: entry.Name(), Path: f})
+			files = append(files, VersionEntry{Name: entry.Name(), Path: f, Os: path.Base(root)})
 		}
 	}
 	return files, nil

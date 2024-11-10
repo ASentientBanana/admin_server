@@ -28,15 +28,23 @@ func GetAllVersions(c *gin.Context) {
 		}
 		osName := content.Name()
 		_, ok := versions[osName]
+
 		if !ok {
 			versions[osName] = []services.VersionEntry{}
 		}
-		entryPath := path.Join("download/mangakolekt", osName)
-		entries, err := services.GetDirEntries(entryPath)
+		entryPath := path.Join("static/mangakolekt", osName)
+		entryPathAlias := path.Join("download/mangakolekt", osName)
+		entries, err := services.GetDirEntries(entryPath, entryPathAlias)
 		if err != nil {
 			continue
 		}
+
 		versions[osName] = append(versions[osName], entries...)
+		// for i := 0; i < len(entries); i++ {
+		// 	fmt.Println(entries[i])
+		// 	versions[osName] = append(versions[osName], entries[i])
+
+		// }
 	}
 
 	c.JSON(http.StatusAccepted, gin.H{
