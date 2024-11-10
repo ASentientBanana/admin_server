@@ -6,9 +6,9 @@ import (
 )
 
 type VersionEntry struct {
-	Name string
-	Path string
-	Os   string
+	Name string `json:"name" xml:"name"`
+	Path string `json:"path" xml:"path"`
+	Os   string `json:"os" xml:"os"`
 }
 
 func GetDirEntries(root string, alias string) ([]VersionEntry, error) {
