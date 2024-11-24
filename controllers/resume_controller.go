@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/AsentientBanana/admin/constants"
@@ -10,9 +11,11 @@ import (
 
 func GetResume(c *gin.Context) {
 
-	c.Header("Content-Transfer-Encoding", "binary")
-	c.Header("Content-Type", "application/octet-stream")
+	c.Header("Content-Type", "application/pdf")
+	c.Header("Content-Disposition", fmt.Sprintf(`attachment; filename*="%s"`, "resume.pdf"))
+	fmt.Println(constants.DEFAULT_RESUME)
 	c.File(constants.DEFAULT_RESUME)
+
 }
 
 func AddResume(c *gin.Context) {
