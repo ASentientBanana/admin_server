@@ -1,16 +1,20 @@
 package main
 
 import (
-	"io"
-	"os"
-	"time"
-
+	"fmt"
 	"github.com/AsentientBanana/admin/server"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"io"
+	"log"
+	"os"
+	"time"
 )
 
 func main() {
+	log.SetOutput(os.Stdout)
+	fmt.Println("STARTING")
+
 	server.InitDatabase()
 	r := gin.Default()
 
@@ -33,7 +37,8 @@ func main() {
 
 	admin_user := os.Getenv("ADMIN_USER")
 	admin_password := os.Getenv("ADMIN_PASSWORD")
-
+	fmt.Println("USER:")
+	fmt.Println(admin_user)
 	if admin_user == "" || admin_password == "" {
 		panic("admin user or password missing in environment.")
 	}

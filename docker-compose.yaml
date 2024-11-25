@@ -1,0 +1,17 @@
+services:
+  app:
+    environment:
+      ADMIN_SECRET: /run/secrets/admin_secret
+      ADMIN_PASSWORD: /run/secrets/admin_password
+      ADMIN_USER: /run/secrets/admin_user
+
+    build: .
+    ports: 
+      - 9999:9898
+secrets:
+  admin_user:
+    file: adminuser.txt
+  admin_secret:
+    file: adminsecret.txt
+  admin_password:
+    file: adminpassword.txt
