@@ -2,5 +2,5 @@
 .kdev4/
 static/
 gin.log
-site.db
+*.db
 .env*

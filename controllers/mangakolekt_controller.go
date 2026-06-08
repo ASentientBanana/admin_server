@@ -8,11 +8,12 @@ import (
 
 	"github.com/AsentientBanana/admin/services"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 // name format
 // mangakolekt1.0.0_linux.tar.gz
-func GetAllVersions(c *gin.Context) {
+func GetAllVersions(c *gin.Context, db *gorm.DB) {
 	contents, err := os.ReadDir("static/mangakolekt")
 	if err != nil {
 		c.String(http.StatusInternalServerError, "No manga versions found")

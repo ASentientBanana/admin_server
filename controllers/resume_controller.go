@@ -7,9 +7,10 @@ import (
 	"github.com/AsentientBanana/admin/constants"
 	"github.com/AsentientBanana/admin/services"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
-func GetResume(c *gin.Context) {
+func GetResume(c *gin.Context, db *gorm.DB) {
 
 	c.Header("Content-Type", "application/pdf")
 	c.Header("Content-Disposition", fmt.Sprintf(`attachment; filename*="%s"`, "resume.pdf"))
@@ -18,7 +19,7 @@ func GetResume(c *gin.Context) {
 
 }
 
-func AddResume(c *gin.Context) {
+func AddResume(c *gin.Context, db *gorm.DB) {
 	if err := c.Request.ParseMultipartForm(32); err != nil {
 		c.String(http.StatusBadRequest, "Error parsing form data: %v", err)
 		return

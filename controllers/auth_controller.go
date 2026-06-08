@@ -7,9 +7,22 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
+	"gorm.io/gorm"
 )
 
-func Login(c *gin.Context) {
+func GetUserCnfig(id string) {
+
+	//Get user from db
+
+	//gets user settings
+
+	// gets gets user role
+
+	// get user data from sanother service
+
+}
+
+func Login(c *gin.Context, db *gorm.DB) {
 
 	var body struct {
 		Username string

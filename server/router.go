@@ -4,6 +4,7 @@ import (
 	"github.com/AsentientBanana/admin/controllers"
 	"github.com/AsentientBanana/admin/middleware"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 type ReqBody struct {
@@ -11,21 +12,24 @@ type ReqBody struct {
 	Password string `json:"password" xml:"password" binding:"required"`
 }
 
-func InitRoutes(server *gin.Engine) {
+func InitRoutes(engine *gin.Engine, db *gorm.DB) {
 
 	//projects
-	server.GET("/projects", controllers.GetProjects)
-	server.PUT("/projects", middleware.Authenticate, controllers.UpdateProjects)
-	server.POST("/projects", middleware.Authenticate, controllers.CreateProjects)
-	server.DELETE("/projects/:id", middleware.Authenticate, controllers.DeleteProjects)
+	engine.GET("/projects", NewHandler(db, controllers.GetProjects))
+	engine.PUT("/projects/positions", NewHandler(db, controllers.UpdateProjectPositions))
+	// engine.PUT("/projects", middleware.Authenticate, NewHandler(db, controllers.UpdateProjects))
+	engine.PUT("/projects/:id", NewHandler(db, controllers.UpdateProject))
+	engine.POST("/projects", NewHandler(db, controllers.CreateProjects))
+	engine.DELETE("/projects/:id", NewHandler(db, controllers.DeleteProjects))
 
 	//resume
-	server.GET("/resume", controllers.GetResume)
-	server.POST("/resume", middleware.Authenticate, controllers.AddResume)
+	engine.GET("/resume", NewHandler(db, controllers.GetResume))
+	engine.POST("/resume", middleware.Authenticate, NewHandler(db, controllers.AddResume))
 
 	// auth
-	server.POST("/login", controllers.Login)
+	engine.POST("/login", NewHandler(db, controllers.Login))
 
-	//manga kolekt
-	server.GET("/mangakolekt/versions", controllers.GetAllVersions)
+	////manga kolekt
+	//engine.GET("/mangakolekt/versions", NewHandler(db, controllers.GetAllVersions))
+	//
 }
