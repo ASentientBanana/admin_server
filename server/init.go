@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/AsentientBanana/admin/middleware"
+	"github.com/AsentientBanana/admin/util"
 	"github.com/gin-gonic/gin"
 )
 
@@ -16,7 +17,7 @@ func InitServer() *gin.Engine {
 	}
 
 	// Just a check if env variables are present
-	_, _, err = LoadUserEnv()
+	_, err = util.LoadUserEnv()
 
 	if err != nil {
 		panic(err)

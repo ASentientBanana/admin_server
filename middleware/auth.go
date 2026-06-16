@@ -3,10 +3,10 @@ package middleware
 import (
 	"fmt"
 	"net/http"
-	"os"
 	"strings"
 	"time"
 
+	"github.com/AsentientBanana/admin/util"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -37,8 +37,14 @@ func Authenticate(c *gin.Context) {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 		}
 
-		// hmacSampleSecret is a []byte containing your secret, e.g. []byte("my_secret_key")
-		return []byte(os.Getenv("ADMIN_SECRET")), nil
+		env, err := util.LoadUserEnv()
+
+		if err != nil {
+			panic("No env variable for secret available.")
+		}
+
+		// secret is a []byte containing your secret, e.g. []byte("my_secret_key")
+		return []byte(env.Secret), nil
 	})
 	if err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
