@@ -1,0 +1,39 @@
+# This workflow will build a golang project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
+
+name: Deploy admin server
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.22'
+
+    - name: Build
+      run: GOOS=linux GOARCH=amd64 go build -o admin_server .
+
+    - name: Copy binary to VPS
+      uses: appleboy/scp-action@v0.1.7
+      with:
+        host: ${{secrets.HOST}}
+        username: ${{secrets.USER}}
+        key: ${{secrets.SSH_KEY}}
+        source: admin_server
+        target: /home/pkol/services/admin_server/
+        
+    - name: Restart with pm2
+      uses: appleboy/scp-action@v0.1.7
+      with:
+        host: ${{secrets.HOST}}
+        username: ${{secrets.USER}}
+        key: ${{secrets.SSH_KEY}}
+        script: pm2 restart /home/pkol/services/admin_server/admin_server 
