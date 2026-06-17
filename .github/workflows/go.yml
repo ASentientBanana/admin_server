@@ -21,6 +21,10 @@ jobs:
     - name: Build
       run: GOOS=linux GOARCH=amd64 go build -o admin_server .
 
+    - name: Test SSH connection
+      run: |
+        ssh -i ~/.ssh/deploy_key -v ${{ secrets.USER }}@${{ secrets.HOST }} "whoami"
+
     - name: Setup SSH key
       run: |
         mkdir -p ~/.ssh
