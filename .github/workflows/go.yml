@@ -21,19 +21,17 @@ jobs:
     - name: Build
       run: GOOS=linux GOARCH=amd64 go build -o admin_server .
 
+    - name: Setup SSH key
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_KEY }}" > ~/.ssh/deploy_key
+        chmod 600 ~/.ssh/deploy_key
+        ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
+
     - name: Copy binary to VPS
-      uses: appleboy/scp-action@v0.1.7
-      with:
-        host: ${{secrets.HOST}}
-        username: ${{secrets.USER}}
-        key: ${{secrets.SSH_KEY}}
-        source: admin_server
-        target: /home/pkol/services/admin_server/
-        
-    - name: Restart with pm2
-      uses: appleboy/scp-action@v0.1.7
-      with:
-        host: ${{secrets.HOST}}
-        username: ${{secrets.USER}}
-        key: ${{secrets.SSH_KEY}}
-        script: pm2 restart /home/pkol/services/admin_server/admin_server 
+      run: |
+           scp -i ~/.ssh/deploy_key admin_server ${{ secrets.USER }}@${{ secrets.HOST }}:/home/pkol/services/admin_server/
+  
+    - name: Restart via pm2
+      run: |
+          ssh -i ~/.ssh/deploy_key ${{ secrets.USER }}@${{ secrets.HOST }} "pm2 restart go-server"
