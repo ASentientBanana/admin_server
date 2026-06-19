@@ -43,5 +43,5 @@ jobs:
         username: ${{ secrets.USER }}
         key: ${{ secrets.SSH_KEY }}
         port: 22
-        script: "pm2 restart go-server"
+        script: "pm2 restart admin_server"
   
