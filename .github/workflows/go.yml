@@ -27,17 +27,20 @@ jobs:
         echo "${{ secrets.SSH_KEY }}" | head -1
         echo "${{ secrets.SSH_KEY }}" | tail -1
 
-    - name: Setup SSH key
-      run: |
-        mkdir -p ~/.ssh
-        echo "${{ secrets.SSH_KEY }}" > ~/.ssh/deploy_key
-        chmod 600 ~/.ssh/deploy_key
-        ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
+    - uses: burnett01/rsync-deployments@5.2
+      with:
+        switches: -havz
+        remote_host: ${{ secrets.HOST }}
+        remote_user: ${{ secrets.USER }}
+        remote_key: ${{ secrets.SSH_KEY }}
+        path: "admin_server"
+        remote_path: "/home/pkol/services/admin_server/admin_server"
 
-    - name: Copy binary to VPS
-      run: |
-           scp -i ~/.ssh/deploy_key admin_server ${{ secrets.USER }}@${{ secrets.HOST }}:/home/pkol/services/admin_server/
+    - uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USER }}
+        key: ${{ secrets.SSH_KEY }}
+        port: 22
+        script: "pm2 restart go-server"
   
-    - name: Restart via pm2
-      run: |
-          ssh -i ~/.ssh/deploy_key ${{ secrets.USER }}@${{ secrets.HOST }} "pm2 restart go-server"
