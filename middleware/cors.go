@@ -9,7 +9,7 @@ import (
 
 func AddCorsMiddleware(engine *gin.Engine) {
 	engine.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"https://petarkocic.net/"}, // Change this to your frontend's origin
+		AllowOrigins:     []string{"https://petarkocic.net"}, // Change this to your frontend's origin
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
